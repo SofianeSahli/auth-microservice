@@ -134,7 +134,7 @@ export class AuthController {
     await this.authService.updateAuth(user)
     try {
       const baseURl = this.config.get('APP_URL') ?? 'http://localhost:3000'
-      const success = await this.emailService.sendEmailValidation(
+      const success = await this.emailService.sendTemplatedEmail(
         user.account_recuperation_email,
         user.username,
         baseURl + '/api/v1/auth/treat-confirm-emails/' + token,
@@ -179,4 +179,48 @@ export class AuthController {
 
   }
 
+  @Get('send-reset-password-mail/:account')
+  async resetPasswordEmail(@Param('account') accountIdentifier: string) {
+    if (!accountIdentifier) {
+      throw new BadRequestException('errors.missing_params')
+    }
+    const auth = await this.authService.findAuthByUsernameOrEmail(accountIdentifier)
+
+    if (!auth?.email_verified || !auth.account_recuperation_email) {
+      throw new BadRequestException('errors.email_not_provided_for_account')
+    }
+
+    const token = await this.jwImplem.generatePasswordResetToken(auth.id, auth.account_recuperation_email)
+    auth.reset_password_token = token
+    this.authService.updateAuth(auth)
+    try {
+      const baseURl = this.config.get('APP_URL') ?? 'http://localhost:3000'
+      const success = await this.emailService.sendTemplatedEmail(
+        auth.account_recuperation_email,
+        auth.username,
+        baseURl + '/api/v1/auth/treat-confirm-emails/' + token,
+        {
+          subject: "Password reset",
+          companyName: this.config.get('COMPANY_NAME') ?? 'COMPANY_NAME',
+          supportUrl: this.config.get('SUPPORT_URL') ?? 'SUPPORT_URL',
+        }, 'layouts/reset-password.pug'
+      );
+
+      return {
+        success,
+        message: success
+          ? 'Validation email sent successfully'
+          : 'Failed to send validation email',
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Error sending validation email',
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
+
+  }
 }

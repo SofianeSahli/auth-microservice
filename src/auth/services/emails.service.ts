@@ -48,8 +48,49 @@ export class EmailService {
       return false;
     }
   }
-  // email.service.ts
-  async sendEmailValidation(
+  /*
+  async sendPasswordResetEmail(
+    email: string,
+    username: string,
+    resetUrl: string,
+    options?: {
+      subject?: string;
+      companyName?: string;
+      supportUrl?: string;
+      ipAddress?: string;
+      deviceInfo?: string;
+    }
+  ): Promise<boolean> {
+    try {
+      // Prepare context for the template
+      const emailContext = {
+        username,
+        resetUrl,
+        companyName: options?.companyName || 'Your Company',
+        supportUrl: options?.supportUrl || 'https://example.com/support',
+        subject: options?.subject || 'Reset Your Password',
+
+      };
+
+      const htmlBody = this.renderTemplate('layouts/reset-password.pug', emailContext);
+
+      return this.sendEmail({
+        to: email,
+        subject: emailContext.subject,
+        html: htmlBody,
+        context: {
+          companyName: emailContext.companyName,
+          title: 'Password Reset Request',
+          year: emailContext.year,
+        },
+      });
+    } catch (error) {
+      this.logger.error(`Failed to send password reset email to ${email}:`, error);
+      return false;
+    }
+  }
+*/
+  async sendTemplatedEmail(
     email: string,
     username: string,
     validationUrl: string,
@@ -58,6 +99,7 @@ export class EmailService {
       companyName?: string;
       supportUrl?: string;
     }
+    , templatePath: string = 'layouts/email-validation.pug'
   ): Promise<boolean> {
     try {
       const emailContext = {
@@ -66,9 +108,11 @@ export class EmailService {
         companyName: options?.companyName || 'Your Company',
         supportUrl: options?.supportUrl || 'https://example.com/support',
         subject: options?.subject || 'Verify Your Email Address',
+        year: new Date().getFullYear(),
+
       };
 
-      const htmlBody = this.renderTemplate('layouts/email-validation.pug', emailContext);
+      const htmlBody = this.renderTemplate(templatePath, emailContext);
 
       return this.sendEmail({
         to: email,

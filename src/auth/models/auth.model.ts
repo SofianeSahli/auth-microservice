@@ -38,7 +38,7 @@ export class Auth extends Model<
   @Column({ allowNull: true, type: DataType.BOOLEAN })
   declare email_verified: boolean | null;
 
-  @Column({ allowNull: true, type: DataType.STRING })
+  @Column({ allowNull: true, type: DataType.STRING(1024) })
   declare reset_password_token: string | null;
 
   @Column({ allowNull: true, type: DataType.DATE })
