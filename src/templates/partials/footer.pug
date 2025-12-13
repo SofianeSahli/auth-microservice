@@ -1,0 +1,64 @@
+// src/templates/partials/footer.pug
+footer.email-footer
+  .footer-content
+    .footer-section
+      h3.footer-title Contact Us
+      p.footer-text
+        | Email: 
+        a(href=`mailto:${contactEmail || 'support@yourcompany.com'}`)= contactEmail || 'support@yourcompany.com'
+      p.footer-text
+        | Phone: #{contactPhone || '+1 (555) 123-4567'}
+      p.footer-text
+        | Address: #{companyAddress || '123 Main St, City, Country'}
+
+    .footer-section
+      h3.footer-title Quick Links
+      ul.footer-links
+        li
+          a(href=baseUrl || 'https://yourwebsite.com') Home
+        li
+          a(href=`${baseUrl || 'https://yourwebsite.com'}/about`) About Us
+        li
+          a(href=`${baseUrl || 'https://yourwebsite.com'}/contact`) Contact
+        li
+          a(href=`${baseUrl || 'https://yourwebsite.com'}/privacy`) Privacy Policy
+        li
+          a(href=`${baseUrl || 'https://yourwebsite.com'}/terms`) Terms of Service
+
+    .footer-section
+      h3.footer-title Follow Us
+      .social-links
+        if socialLinks
+          each link in socialLinks
+            a.social-link(href=link.url, title=link.name)
+              img.social-icon(
+                src=link.icon || `https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/${link.name.toLowerCase()}.svg`,
+                alt=link.name,
+                width="24",
+                height="24"
+              )
+        else
+          a.social-link(href="https://facebook.com/yourcompany", title="Facebook")
+            img.social-icon(src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/facebook.svg", alt="Facebook", width="24", height="24")
+          a.social-link(href="https://twitter.com/yourcompany", title="Twitter")
+            img.social-icon(src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/twitter.svg", alt="Twitter", width="24", height="24")
+          a.social-link(href="https://linkedin.com/company/yourcompany", title="LinkedIn")
+            img.social-icon(src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/linkedin.svg", alt="LinkedIn", width="24", height="24")
+
+  .footer-bottom
+    p.copyright
+      | © #{new Date().getFullYear()} #{companyName || 'Your Company'}. All rights reserved.
+    
+    .unsubscribe
+      if unsubscribeLink
+        p
+          | Don't want to receive these emails? 
+          a(href=unsubscribeLink) Unsubscribe
+      else
+        p
+          | This email was sent to #{recipientEmail || 'you'} because you signed up on our website.
+
+    .disclaimer
+      p.disclaimer-text
+        | This email is intended for #{recipientName || 'the recipient'}. 
+        | Please do not reply to this automated email.

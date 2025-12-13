@@ -1,0 +1,208 @@
+// src/templates/partials/email-validation.pug
+.email-validation-content
+  h2.email-title Verify Your Email Address
+  
+  p.email-greeting Hello #{username},
+  
+  p.email-message 
+    | Thank you for registering with #{companyName}! 
+    | Please verify your email address to complete your account setup 
+    | and start using all our features.
+  
+  .validation-box
+    .validation-header
+      h3.validation-title One Last Step
+    
+    .validation-body
+      p.validation-text
+        | Click the button below to verify your email address:
+      
+      .validation-button-container
+        a.validation-button(href=validationUrl, target="_blank") 
+          span.button-text Verify Email Address
+      
+      p.validation-expiry
+        | This link will expire in 24 hours.
+    
+    .validation-footer
+      p.validation-alternative
+        | Or copy and paste this link in your browser:
+        br
+        a.validation-link(href=validationUrl, target="_blank") #{validationUrl}
+  
+  .security-note
+    h4.security-title Security Reminder
+    p.security-text
+      | For your security, never share this link with anyone. 
+      | Our team will never ask for your verification link.
+  
+  .help-section
+    p.help-text
+      | If you didn't create an account with #{companyName}, 
+      | please ignore this email or contact our support team.
+    
+    p.help-contact
+      | Need help? Reply to this email or visit our 
+      a(href=supportUrl) Help Center
+      | .
+
+style.
+  .email-validation-content {
+    color: #333333;
+    line-height: 1.6;
+  }
+  
+  .email-title {
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+  }
+  
+  .email-greeting {
+    font-size: 18px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+  }
+  
+  .email-message {
+    font-size: 16px;
+    margin-bottom: 30px;
+    color: #555555;
+  }
+  
+  .validation-box {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 10px;
+    padding: 25px;
+    margin: 25px 0;
+    border-left: 5px solid #4CAF50;
+  }
+  
+  .validation-title {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 22px;
+  }
+  
+  .validation-text {
+    font-size: 16px;
+    margin-bottom: 25px;
+    color: #555555;
+  }
+  
+  .validation-button-container {
+    text-align: center;
+    margin: 25px 0;
+  }
+  
+  .validation-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+    color: white;
+    padding: 15px 35px;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  }
+  
+  .validation-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #43a047 0%, #1b5e20 100%);
+  }
+  
+  .validation-expiry {
+    font-size: 14px;
+    color: #666666;
+    text-align: center;
+    margin-top: 15px;
+    font-style: italic;
+  }
+  
+  .validation-footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px dashed #cccccc;
+  }
+  
+  .validation-alternative {
+    font-size: 14px;
+    color: #666666;
+    line-height: 1.5;
+  }
+  
+  .validation-link {
+    color: #4CAF50;
+    word-break: break-all;
+    text-decoration: none;
+  }
+  
+  .validation-link:hover {
+    text-decoration: underline;
+  }
+  
+  .security-note {
+    background-color: #fff3e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 25px 0;
+    border-left: 5px solid #ff9800;
+  }
+  
+  .security-title {
+    color: #e65100;
+    margin-top: 0;
+    font-size: 18px;
+  }
+  
+  .security-text {
+    color: #5d4037;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  .help-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+  }
+  
+  .help-text {
+    color: #666666;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  
+  .help-contact {
+    color: #666666;
+    font-size: 14px;
+  }
+  
+  .help-contact a {
+    color: #4CAF50;
+    text-decoration: none;
+  }
+  
+  .help-contact a:hover {
+    text-decoration: underline;
+  }
+  
+  @media (max-width: 600px) {
+    .validation-box {
+      padding: 20px;
+    }
+    
+    .email-title {
+      font-size: 24px;
+    }
+    
+    .validation-button {
+      padding: 12px 25px;
+      font-size: 14px;
+    }
+  }

@@ -1,0 +1,22 @@
+// src/templates/partials/header.pug
+header.email-header
+  .header-container
+    .logo-section
+      a.logo-link(href=baseUrl || 'https://yourwebsite.com')
+        img.logo(
+          src=logoUrl || 'https://via.placeholder.com/150x50/4CAF50/FFFFFF?text=Logo',
+          alt=companyName || 'Your Company',
+          width="150",
+          height="50"
+        )
+      .company-info
+        h1.company-name= companyName || 'Your Company'
+        p.company-tagline= tagline || 'Making things better'
+    
+    .header-actions
+      if showActionButton
+        a.action-button(href=actionUrl)= actionButtonText || 'Learn More'
+
+    if bannerImage
+      .banner
+        img.banner-img(src=bannerImage, alt="Banner", width="600", height="200")

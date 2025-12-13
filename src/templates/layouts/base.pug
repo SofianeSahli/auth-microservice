@@ -1,0 +1,28 @@
+// src/templates/layouts/base.pug
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= title || 'Email'
+    style
+      include ../css/styles.css
+    block head
+
+  body
+    .email-container
+      //- Header
+      include ../partials/header.pug
+
+      //- Main Content
+      .content-wrapper
+        //- This is where your HTML goes
+        | !{content}
+        
+        //- OR if you want to use block
+        block content
+
+      //- Footer
+      include ../partials/footer.pug
+
+    block scripts
