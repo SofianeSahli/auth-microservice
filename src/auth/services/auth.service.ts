@@ -217,4 +217,8 @@ export class AuthService {
   async findById(id): Promise<Auth | null> {
     return await this.authRepo.findById(id)
   }
+  async resetPassword(userId: string, password: string) {
+    const hashedNew = await bcrypt.hash(password, 10);
+    return this.authRepo.updatePassword(userId, password)
+  }
 }

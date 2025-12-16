@@ -26,6 +26,7 @@ export class AuthRepository {
       { where: { id: userId } }
     );
   }
+
   async update(auth: Partial<Auth>) {
     const updateData = auth.get!({ plain: true });
     const { id, ...dataToUpdate } = updateData;

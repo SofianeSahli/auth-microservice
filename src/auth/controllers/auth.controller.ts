@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  InternalServerErrorException,
   NotAcceptableException,
   NotFoundException,
   Param,
@@ -194,11 +195,11 @@ export class AuthController {
     auth.reset_password_token = token
     this.authService.updateAuth(auth)
     try {
-      const baseURl = this.config.get('APP_URL') ?? 'http://localhost:3000'
+      const baseURl = this.config.get('FRONTEND_URL') ?? 'http://localhost:4200'
       const success = await this.emailService.sendTemplatedEmail(
         auth.account_recuperation_email,
         auth.username,
-        baseURl + '/api/v1/auth/treat-confirm-emails/' + token,
+        baseURl + '/reset-password/' + token,
         {
           subject: "Password reset",
           companyName: this.config.get('COMPANY_NAME') ?? 'COMPANY_NAME',
@@ -221,6 +222,27 @@ export class AuthController {
         timestamp: new Date().toISOString(),
       };
     }
+  }
 
+  @Post('reset-password')
+  async resetPassword(@Body() params: {
+    password: string,
+    token: string
+  }) {
+    const validateToken = await this.jwImplem.verifyPasswordResetToken(params.token)
+    if (!validateToken.isValid || !validateToken.userId) {
+      throw new NotFoundException('errors.no_accound_found')
+    }
+    const user = await this.authService.findById(validateToken.userId)
+    if (user?.reset_password_token !== params.token) {
+      throw new NotFoundException('errors.token_expired')
+    }
+    const result = await this.authService.resetPassword(user.id, params.password)
+    if (!result) {
+      throw new InternalServerErrorException("")
+    }
+    return {
+      message: "ok"
+    }
   }
 }
