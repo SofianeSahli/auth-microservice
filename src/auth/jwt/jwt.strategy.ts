@@ -9,7 +9,7 @@ import { RefreshToken } from '../models/token.model';
 @Injectable()
 export class JwImplem extends PassportStrategy(Strategy) {
 
-  constructor(private config: ConfigService, private readonly jwtService: JwtService,
+  constructor(private config: ConfigService, private readonly jwtService: JwtService
   ) {
     const secret = config.get<string>('JWT_SECRET');
     if (!secret) throw new Error('JWT_SECRET must be defined');
@@ -19,7 +19,14 @@ export class JwImplem extends PassportStrategy(Strategy) {
       secretOrKey: secret,
     });
   }
-
+  async validate(payload: any) {
+    // Retourne simplement le payload si vous faites confiance au token
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      // ... autres données du payload
+    };
+  }
 
   /**
  * Generate email confirmation token (one-time use)
@@ -121,20 +128,43 @@ export class JwImplem extends PassportStrategy(Strategy) {
   }
 
   public async generateRefreshToken(user: Auth) {
+    const refreshExpiry = this.config.get('JWT_REFRESH_EXPIRY') ?? '7d';
+
+    // Parse manuellement la durée
+    const expiresInMs = this.parseDurationToMs(refreshExpiry);
+
     const token = this.jwtService.sign(
       { sub: user.id },
-      { expiresIn: `${this.config.get('JWT_REFRESH_EXPIRY') ?? '7d'}` }
+      { expiresIn: refreshExpiry }
     );
 
     const record = await RefreshToken.create({
       token,
       auth_id: user.id,
-      expires_at: new Date(
-        Date.now() + `${this.config.get('JWT_REFRESH_EXPIRY') ?? '7d'}`
-      ),
+      expires_at: new Date(Date.now() + expiresInMs),
     } as RefreshToken);
 
     return { token, record };
+  }
+
+  private parseDurationToMs(duration: string): number {
+    const regex = /^(\d+)([dhms])$/;
+    const match = duration.match(regex);
+
+    if (!match) {
+      throw new Error(`Invalid duration format: ${duration}. Use format like 7d, 24h, 30m`);
+    }
+
+    const value = parseInt(match[1], 10);
+    const unit = match[2];
+
+    switch (unit) {
+      case 'd': return value * 24 * 60 * 60 * 1000; // jours
+      case 'h': return value * 60 * 60 * 1000;      // heures
+      case 'm': return value * 60 * 1000;           // minutes
+      case 's': return value * 1000;                // secondes
+      default: throw new Error(`Unknown time unit: ${unit}`);
+    }
   }
   /**
    * Quick utility to check if token is one-time use
@@ -142,4 +172,5 @@ export class JwImplem extends PassportStrategy(Strategy) {
   isOneTimeUseToken(payload: any): boolean {
     return payload.oneTimeUse === true;
   }
+
 }

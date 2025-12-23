@@ -31,7 +31,11 @@ export class AuthService {
   ) { }
 
 
-  async login(dto: RegisterDto, req?: Request) {
+  async login(dto: RegisterDto, req?: Request): Promise<{
+    access_token: string,
+    refresh_token,
+    auth: Auth
+  }> {
     const user = await this.authRepo.findByUsername(dto.username);
     if (!user || !(await bcrypt.compare(dto.password, user.password))) {
       throw new UnauthorizedException("errors.invalid_credentials");
@@ -68,15 +72,15 @@ export class AuthService {
     return {
       access_token,
       refresh_token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.account_recuperation_email,
-      },
+      auth: user
     };
   }
 
-  async refreshToken(token: string, req?: Request) {
+  async refreshToken(token: string, req?: Request): Promise<{
+    access_token: string,
+    refresh_token,
+    auth: Auth
+  }> {
     const stored = await RefreshToken.findOne({ where: { token } });
 
     if (!stored) throw new UnauthorizedException("errors.session_expired");
@@ -125,11 +129,7 @@ export class AuthService {
     return {
       access_token,
       refresh_token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.account_recuperation_email,
-      },
+      auth: user,
     };
   }
 
@@ -219,6 +219,6 @@ export class AuthService {
   }
   async resetPassword(userId: string, password: string) {
     const hashedNew = await bcrypt.hash(password, 10);
-    return this.authRepo.updatePassword(userId, password)
+    return this.authRepo.updatePassword(userId, hashedNew)
   }
 }

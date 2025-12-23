@@ -19,6 +19,7 @@ import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { RegisterDto } from '../dtos/auth.dto';
+import { LoginResponseDto } from '../dtos/login-response.dto';
 import { UpdatePasswordDto } from '../dtos/update-password.dto';
 import { JwtAuthGuard } from '../jwt/guard';
 import { JwImplem } from '../jwt/jwt.strategy';
@@ -43,8 +44,10 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() dto: RegisterDto, @Request() req) {
-    return this.authService.login(dto, req);
+  async login(@Body() dto: RegisterDto, @Request() req) {
+    const loginResponse = await this.authService.login(dto, req);
+    const responseDto = new LoginResponseDto(loginResponse.access_token, loginResponse.refresh_token, loginResponse.auth)
+    return responseDto.toJson()
   }
 
   @UseGuards(JwtAuthGuard)
@@ -55,13 +58,16 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(@Body() body: { refresh_token: string }, @Req() req) {
-    return this.authService.refreshToken(body.refresh_token, req);
+    const loginResponse = await this.authService.refreshToken(body.refresh_token, req);
+    const responseDto = new LoginResponseDto(loginResponse.access_token, loginResponse.refresh_token, loginResponse.auth)
+    return responseDto.toJson()
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('validate')
-  async validateToken(@Req() req: any) {
-    return { valid: true, user: req.user };
+  async validateToken(@CurrentUser() auth: any) {
+    let user = await this.authService.findById(auth.userId)
+    return { valid: true, user: user };
   }
 
   @Get('check-username')
