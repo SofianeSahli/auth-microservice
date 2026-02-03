@@ -23,7 +23,6 @@ import { LoginResponseDto } from '../dtos/login-response.dto';
 import { UpdatePasswordDto } from '../dtos/update-password.dto';
 import { JwtAuthGuard } from '../jwt/guard';
 import { JwImplem } from '../jwt/jwt.strategy';
-import { Auth } from '../models/auth.model';
 import { AuthService } from '../services/auth.service';
 import { EmailService } from '../services/emails.service';
 
@@ -53,7 +52,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Request() req, @CurrentUser() user) {
-    return this.authService.logout(user.id);
+    return this.authService.logout(user.userId);
   }
 
   @Post('refresh')
@@ -105,12 +104,12 @@ export class AuthController {
   async updatteAuth(@Req() req, @Body() body: {
     email: string,
     phone: string
-  }, @CurrentUser() auth: Auth) {
+  }, @CurrentUser() auth: any) {
 
-    if (!auth.id) {
+    if (!auth.userId) {
       throw new UnauthorizedException("errors.user_not_found")
     }
-    const user = await this.authService.findById(auth.id);
+    const user = await this.authService.findById(auth.userId);
 
     if (!user) {
       throw new UnauthorizedException("errors.user_not_found");
