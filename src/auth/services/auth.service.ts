@@ -182,9 +182,7 @@ export class AuthService {
   ) {
     const ttlSeconds = this.parseExpiration(expiresIn); // convert "15m" to seconds
     await this.redis.set(`access:${token}`, userId, "EX", ttlSeconds);
-    const value = await this.redis.get(`access:${token}`);
-
-    console.log("✅ Redis connection OK:", value);
+    await this.redis.get(`access:${token}`);
   }
 
   private async deleteAccessTokenFromRedis(token: string) {
