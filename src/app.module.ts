@@ -56,15 +56,30 @@ import { AuthModule } from "./auth/auth.module";
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        dialect: "postgres",
+        dialect: 'mysql',
         logging: false,
-        host: configService.get("DB_HOST", "localhost"),
-        port: Number(configService.get("DB_PORT", 5432)),
-        username: configService.get("DB_USERNAME", "postgres"),
-        password: configService.get("DB_PASSWORD", "postgres"),
-        database: configService.get("DB_NAME", "auth_ms"),
+
+        host: configService.get<string>('DB_HOST', 'localhost'),
+        port: Number(configService.get<number>('DB_PORT', 3306)),
+
+        username: configService.get<string>('DB_USERNAME', 'root'),
+        password: configService.get<string>('DB_PASSWORD', ''),
+        database: configService.get<string>('DB_NAME', 'auth_ms'),
+
         autoLoadModels: true,
-        synchronize: configService.get("NODE_ENV") !== "production",
+
+        // ⚠️ Never enable in production
+        synchronize: configService.get('NODE_ENV') !== 'production',
+
+        // Recommended MySQL options
+        define: {
+          charset: 'utf8mb4',
+          collate: 'utf8mb4_unicode_ci',
+        },
+
+        dialectOptions: {
+          timezone: 'Z', // store dates in UTC
+        },
       }),
     }),
 
